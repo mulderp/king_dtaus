@@ -6,7 +6,7 @@ require 'spec_helper'
 describe KingDta::Dtazv do
 
   before :each do
-    @dtazv = KingDta::Dtazv.new(Date.parse('2011-08-28'))
+    @dtazv = KingDta::Dtazv.new(:date => Date.parse('2011-08-28'))
     @dtazv.account = KingDta::Account.new sender_opts
     @booking = KingDta::Booking.new( KingDta::Account.new( receiver_opts ), 220.25)
   end
@@ -16,11 +16,11 @@ describe KingDta::Dtazv do
   end
 
   it "should init with valid values" do
-    lambda{ KingDta::Dtazv.new(Date.today) }.should_not raise_error(ArgumentError)
+    lambda{ KingDta::Dtazv.new(:date => Date.today) }.should_not raise_error(ArgumentError)
   end
 
   it "should not init with an invalid date" do
-    lambda{ KingDta::Dtazv.new("date") }.should raise_error(ArgumentError)
+    lambda{ KingDta::Dtazv.new(:date => "date") }.should raise_error(ArgumentError)
   end
 
   it "should deny invalid accounts" do
@@ -91,7 +91,7 @@ describe "KingDta::DtazvSegments" do
 
   before :each do
     @date = Date.today
-    @dtazv = KingDta::Dtazv.new(@date)
+    @dtazv = KingDta::Dtazv.new(:date => @date)
     @dtazv.account = KingDta::Account.new( sender_opts)
     @booking = KingDta::Booking.new(KingDta::Account.new( receiver_opts ), 220.25)
 

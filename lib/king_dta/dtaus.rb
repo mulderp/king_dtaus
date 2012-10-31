@@ -11,10 +11,10 @@ module KingDta
     # === Parameter
     # typ<String>:: valid strings are 'LK' (Lastschrift Kunde) and 'GK' (Gutschrift Kunde)
     # typ<Date>:: date when the the transfer is to be created
-    def initialize( typ, date=Date.today )
+    def initialize( typ, attrs={:date=>Date.today, :execution_date => Date.today} )
       raise ArgumentError.new("Unknown order type: #{typ}. Allowed Values are LK, GK") unless ['LK','GK'].include?(typ)
       @typ = typ
-      super(date)
+      super(:date => attrs[:date], :execution_date => attrs[:execution_date])
     end
 
     # Creates the whole dta string(in the right order) and returns it
@@ -77,7 +77,7 @@ module KingDta
       data += '%010i' % @account.bank_account_number
       data += '%010i' % 0
       data += ' '  * 15
-      data += '%8s' % @date.strftime("%d%m%Y")     #Ausführungsdatum - ja hier 8 Stellen
+      data += '%8s' % @execution_date.strftime("%d%m%Y")     #Ausführungsdatum - ja hier 8 Stellen
       data += ' ' * 24
       data += '1'
       raise "DTAUS: Längenfehler A (#{data.size} <> 128)\n" if data.size != 128

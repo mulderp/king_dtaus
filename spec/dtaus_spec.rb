@@ -4,8 +4,8 @@ require 'spec_helper'
 describe KingDta::Dtaus do
 
   before :each do
-    @dtaus = KingDta::Dtaus.new('LK', Date.today)
-    @dtaus_gk = KingDta::Dtaus.new('GK', Date.today)
+    @dtaus = KingDta::Dtaus.new('LK', :date => Date.today, :execution_date => (Date.today + 1))
+    @dtaus_gk = KingDta::Dtaus.new('GK', :date => Date.today)
     @kto1 = test_kto1
     @kto2 = test_kto2
     @dtaus.account = KingDta::Account.new(:bank_account_number => @kto1.bank_account_number, :bank_number => @kto1.bank_number, :owner_name => @kto1.owner_name, :bank_name => @kto1.bank_name)
@@ -18,15 +18,15 @@ describe KingDta::Dtaus do
   end
 
   it "should init with valid values" do
-    lambda{ KingDta::Dtaus.new('LK', Date.today) }.should_not raise_error(ArgumentError)
+    lambda{ KingDta::Dtaus.new('LK', :date => Date.today) }.should_not raise_error(ArgumentError)
   end
 
   it "should not init with an unknown type" do
-    lambda{ KingDta::Dtaus.new('UNKNOWN', "date") }.should raise_error(ArgumentError)
+    lambda{ KingDta::Dtaus.new('UNKNOWN', :date => "date") }.should raise_error(ArgumentError)
   end
 
   it "should not init with an invalid date" do
-    lambda{ KingDta::Dtaus.new('LK', "date") }.should raise_error(ArgumentError)
+    lambda{ KingDta::Dtaus.new('LK', :date => "date") }.should raise_error(ArgumentError)
   end
 
   it "should deny invalid accounts" do
@@ -52,7 +52,7 @@ describe KingDta::Dtaus do
   it "should create header" do
     str = @dtaus.add_a
     str.length.should == 128
-    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{Date.today.strftime("%d%m%Y")}                        1"
+    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{(Date.today + 1).strftime("%d%m%Y")}                        1"
     str.should == out
     #60-70 kontonummer mit nullen aufgefüllt - hier nicht da ktnr == 10 stellen
     str[60...70].should == "#{test_kto1.bank_account_number}"
@@ -122,7 +122,7 @@ describe KingDta::Dtaus do
     str.should include(@kto1.owner_name.upcase)
     str.should include(@kto2.owner_name.upcase)
     str.should include(@dtaus.default_text.upcase)
-    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{Date.today.strftime("%d%m%Y")}                        1"+
+    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{(Date.today + 1).strftime("%d%m%Y")}                        1"+
           "0187C00000000370400440002787777000000000000005000 0000000000037040044782897003700000022025   PETER & MAY GMBH                           GIMME YOUR MONEY AGDEFAULT VERWENDUNGSZWECK   1  00                                                                     "+
           "0128E     0000001000000000000000000000002787777000000000370400440000000022025                                                   "
     str.should == out
@@ -143,7 +143,7 @@ describe KingDta::Dtaus do
     str = @dtaus.create
     str.length.should == 640
     str.should include(@kto2.owner_name.upcase)
-    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{Date.today.strftime("%d%m%Y")}                        1"+
+    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{(Date.today + 1).strftime("%d%m%Y")}                        1"+
           "0274C00000000370400440002787777000000000000005000 0000000000037040044782897003700000022025   PETER & MAY GMBH                           GIMME YOUR MONEY AGRGN R-3456-0102220 MONATSBE1  0302ITRAG 08/10 FREELANCER VERS02ION VIELEN DANK IHRE SALESK           02ING GMBH                                                                                                                      "+
           "0128E     0000001000000000000000000000002787777000000000370400440000000022025                                                   "
     str.should == out
@@ -157,7 +157,7 @@ describe KingDta::Dtaus do
     str.should include(@kto1.owner_name.upcase)
     str.should include(@kto2.owner_name.upcase)
     str.should include(@dtaus.default_text.upcase)
-    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{Date.today.strftime("%d%m%Y")}                        1"+
+    out = "0128ALK3704004400000000GIMME YOUR MONEY AG        #{Date.today.strftime("%d%m%y")}    78289700370000000000               #{(Date.today + 1).strftime("%d%m%Y")}                        1"+
           "0187C00000000370400440002787777000000000000005000 0000000000037040044782897003700000022025   PETER & MAY GMBH                           GIMME YOUR MONEY AGDEFAULT VERWENDUNGSZWECK   1  00                                                                     "+
           "0187C00000000370400440002787777000000000000005000 0000000000037040044782897003700000022025   PETER & MAY GMBH                           GIMME YOUR MONEY AGDEFAULT VERWENDUNGSZWECK   1  00                                                                     "+
           "0187C00000000370400440002787777000000000000005000 0000000000037040044782897003700000022025   PETER & MAY GMBH                           GIMME YOUR MONEY AGDEFAULT VERWENDUNGSZWECK   1  00                                                                     "+
